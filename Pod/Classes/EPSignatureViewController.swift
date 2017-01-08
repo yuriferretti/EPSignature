@@ -9,9 +9,9 @@
 import UIKit
 
     // MARK: - EPSignatureDelegate
-public protocol EPSignatureDelegate: class {
-    func epSignature(_: EPSignatureViewController, didCancel error : NSError)
-    func epSignature(_: EPSignatureViewController, didSign signatureImage : UIImage, boundingRect: CGRect)
+@objc public protocol EPSignatureDelegate: class {
+    @objc func epSignature(_: EPSignatureViewController, didCancel error : NSError)
+    @objc func epSignature(_: EPSignatureViewController, didSign signatureImage : UIImage, boundingRect: CGRect)
 }
 
 extension EPSignatureDelegate {
