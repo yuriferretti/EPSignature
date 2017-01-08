@@ -32,6 +32,8 @@ open class EPSignatureViewController: UIViewController {
     open var showsSaveSignatureOption: Bool = true
     open weak var signatureDelegate: EPSignatureDelegate?
     open var subtitleText = "Sign Here"
+    open var missingSignatureTitle = "Ops"
+    open var missingSignatureMessage = "Você precisa assinar para continuar"
     open var tintColor = UIColor.defaultTintColor()
 
     // MARK: - Life cycle methods
@@ -78,15 +80,15 @@ open class EPSignatureViewController: UIViewController {
     
     // MARK: - Initializers
     
-    public convenience init(signatureDelegate: EPSignatureDelegate) {
+    public convenience init(signatureDelegate: EPSignatureDelegate? = nil) {
         self.init(signatureDelegate: signatureDelegate, showsDate: true, showsSaveSignatureOption: true)
     }
     
-    public convenience init(signatureDelegate: EPSignatureDelegate, showsDate: Bool) {
+    public convenience init(signatureDelegate: EPSignatureDelegate? = nil, showsDate: Bool) {
         self.init(signatureDelegate: signatureDelegate, showsDate: showsDate, showsSaveSignatureOption: true)
     }
     
-    public init(signatureDelegate: EPSignatureDelegate, showsDate: Bool, showsSaveSignatureOption: Bool ) {
+    public init(signatureDelegate: EPSignatureDelegate = nil , showsDate: Bool, showsSaveSignatureOption: Bool ) {
         self.showsDate = showsDate
         self.showsSaveSignatureOption = showsSaveSignatureOption
         self.signatureDelegate = signatureDelegate
@@ -101,8 +103,7 @@ open class EPSignatureViewController: UIViewController {
     // MARK: - Button Actions
     
     func onTouchCancelButton() {
-        signatureDelegate?.epSignature!(self, didCancel: NSError(domain: "EPSignatureDomain", code: 1, userInfo: [NSLocalizedDescriptionKey:"User not signed"]))
-        dismiss(animated: true, completion: nil)
+        signatureDelegate?.epSignature?(self, didCancel: NSError(domain: "EPSignatureDomain", code: 1, userInfo: [NSLocalizedDescriptionKey:"User not signed"]))
     }
 
     func onTouchDoneButton() {
@@ -112,10 +113,9 @@ open class EPSignatureViewController: UIViewController {
                 let filePath = (docPath! as NSString).appendingPathComponent("sig.data")
                 signatureView.saveSignature(filePath)
             }
-            signatureDelegate?.epSignature!(self, didSign: signature, boundingRect: signatureView.getSignatureBoundsInCanvas())
-            dismiss(animated: true, completion: nil)
+            signatureDelegate?.epSignature?(self, didSign: signature, boundingRect: signatureView.getSignatureBoundsInCanvas())
         } else {
-            showAlert("You did not sign", andTitle: "Please draw your signature")
+            showAlert(missingSignatureMessage, andTitle: missingSignatureTitle)
         }
     }
     
