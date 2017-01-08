@@ -9,9 +9,14 @@
 import UIKit
 
     // MARK: - EPSignatureDelegate
-@objc public protocol EPSignatureDelegate {
-    @objc optional    func epSignature(_: EPSignatureViewController, didCancel error : NSError)
-    @objc optional    func epSignature(_: EPSignatureViewController, didSign signatureImage : UIImage, boundingRect: CGRect)
+public protocol EPSignatureDelegate: class {
+    func epSignature(_: EPSignatureViewController, didCancel error : NSError)
+    func epSignature(_: EPSignatureViewController, didSign signatureImage : UIImage, boundingRect: CGRect)
+}
+
+extension EPSignatureDelegate {
+    func epSignature(_: EPSignatureViewController, didCancel error : NSError) {}
+    func epSignature(_: EPSignatureViewController, didSign signatureImage : UIImage, boundingRect: CGRect) {}
 }
 
 open class EPSignatureViewController: UIViewController {
@@ -88,7 +93,7 @@ open class EPSignatureViewController: UIViewController {
         self.init(signatureDelegate: signatureDelegate, showsDate: showsDate, showsSaveSignatureOption: true)
     }
     
-    public init(signatureDelegate: EPSignatureDelegate = nil , showsDate: Bool, showsSaveSignatureOption: Bool ) {
+    public init(signatureDelegate: EPSignatureDelegate? = nil , showsDate: Bool, showsSaveSignatureOption: Bool ) {
         self.showsDate = showsDate
         self.showsSaveSignatureOption = showsSaveSignatureOption
         self.signatureDelegate = signatureDelegate
@@ -103,7 +108,7 @@ open class EPSignatureViewController: UIViewController {
     // MARK: - Button Actions
     
     func onTouchCancelButton() {
-        signatureDelegate?.epSignature?(self, didCancel: NSError(domain: "EPSignatureDomain", code: 1, userInfo: [NSLocalizedDescriptionKey:"User not signed"]))
+        signatureDelegate?.epSignature(self, didCancel: NSError(domain: "EPSignatureDomain", code: 1, userInfo: [NSLocalizedDescriptionKey:"User not signed"]))
     }
 
     func onTouchDoneButton() {
@@ -113,7 +118,8 @@ open class EPSignatureViewController: UIViewController {
                 let filePath = (docPath! as NSString).appendingPathComponent("sig.data")
                 signatureView.saveSignature(filePath)
             }
-            signatureDelegate?.epSignature?(self, didSign: signature, boundingRect: signatureView.getSignatureBoundsInCanvas())
+            
+            signatureDelegate?.epSignature(self, didSign: signature, boundingRect: signatureView.getSignatureBoundsInCanvas())
         } else {
             showAlert(missingSignatureMessage, andTitle: missingSignatureTitle)
         }
